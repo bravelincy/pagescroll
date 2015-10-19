@@ -53,12 +53,13 @@ body {
 
         function pageScroll(options) {
             var opts = {
-                container: $(options.container),
-                direction: options.direction || 'vertical',
-                effect   : options.effect || '',
-                start    : options.start || function(){},
-                end      : options.end || function(){},
-                duration : 500
+                container         : $(options.container),
+                direction         : options.direction || 'vertical',
+                effect            : options.effect || '',
+                start             : options.start || function(){},
+                end               : options.end || function(){},
+                scrollDuration    : 300,
+                springbackDuration: 200
             };
             var touch = null;
             var child = opts.container.children;
@@ -120,7 +121,7 @@ body {
 
             //滑动后抬起的处理
             function upliftHandler() {
-                if (Math.abs(touch.distance) > onceDistance/5) {
+                if (Math.abs(touch.distance) > onceDistance/6) {
                     scroll();
                 } else {
                     springback();
@@ -138,13 +139,15 @@ body {
                 }
 
                 current.position = -current.index * onceDistance;
-                setCssText(current.position, opts.duration);
-                opts.end.apply(child[current.index], [current.index, oldIndex, child[oldIndex]]);
+                setCssText(current.position, opts.scrollDuration);
+                setTimeout(function () {
+                    opts.end.apply(child[current.index], [current.index, oldIndex, child[oldIndex]]);
+                }, opts.scrollDuration);
             }
 
             //不满足翻页条件页面回弹
             function springback() {
-                setCssText(current.position, opts.duration);
+                setCssText(current.position, opts.springbackDuration);
             }
 
             function setCssText(position, duration) {
